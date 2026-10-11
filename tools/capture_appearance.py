@@ -44,8 +44,8 @@ def main():
     parser.add_argument('--output', '--out', dest='output', type=Path, required=True)
     parser.add_argument('--serial', default='emulator-5554')
     parser.add_argument('--expected-avd', default='StaffAndroid_API_36')
-    parser.add_argument('--candidate', default='candidate1')
-    parser.add_argument('--apk', type=Path, help='Explicit debug APK; defaults to the retained candidate artifact.')
+    parser.add_argument('--candidate', help='Optional retained author checkpoint')
+    parser.add_argument('--apk', type=Path, help='Explicit debug APK; defaults to app/build output.')
     parser.add_argument('--configs', nargs='+', choices=['light','dark','large','wide'],
                         default=['light','dark','large','wide'])
     parser.add_argument('--max-scrolls', type=int, default=8)
@@ -54,7 +54,7 @@ def main():
     args.package = 'staff.android.startup'
     if not 1 <= args.max_scrolls <= 20 or not 1 <= args.settle_timeout <= 120:
         parser.error('Use finite scroll and settle bounds.')
-    apk = (args.apk or PROJECT/'evidence'/args.candidate/'artifacts/app-debug.apk').resolve()
+    apk = (args.apk or (PROJECT/'evidence'/args.candidate/'artifacts/app-debug.apk' if args.candidate else PROJECT/'app/build/outputs/apk/debug/app-debug.apk')).resolve()
     if not apk.is_file():
         parser.error('Debug APK does not exist: ' + str(apk))
     if args.output.exists():
